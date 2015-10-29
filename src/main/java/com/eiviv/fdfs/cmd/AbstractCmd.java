@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.util.Arrays;
 
 import com.eiviv.fdfs.context.Context;
-import com.eiviv.fdfs.exception.FastdfsClientException;
 import com.eiviv.fdfs.model.Result;
 import com.eiviv.fdfs.utils.ByteUtils;
 
@@ -19,7 +18,7 @@ public abstract class AbstractCmd<T extends Serializable> implements Cmd<T> {
 	 * socket write
 	 * 
 	 * @param socket
-	 * @throws FastdfsClientException
+	 * @throws IOException
 	 */
 	public final void request(Socket socket) throws IOException {
 		OutputStream sockectOutputStream = socket.getOutputStream();
@@ -89,7 +88,7 @@ public abstract class AbstractCmd<T extends Serializable> implements Cmd<T> {
 	 * 
 	 * @param socket
 	 * @return result
-	 * @throws FastdfsClientException
+	 * @throws IOException
 	 */
 	private Result<T> receive(Socket socket) throws IOException {
 		OutputStream writer = getOutputStream();
@@ -134,11 +133,7 @@ public abstract class AbstractCmd<T extends Serializable> implements Cmd<T> {
 		
 		int totalBytes = 0;
 		int remainBytes = (int) resEntity2L;
-		byte[] buff = new byte[remainBytes];
-		
-		if (Context.STORAGE_PROTO_CMD_DOWNLOAD_FILE == getRequestContext().getRequestCmdCode()) {
-			buff = new byte[256 * 1024];
-		}
+		byte[] buff = new byte[256 * 1024];
 		
 		try {
 			while (totalBytes < resEntity2L) {

@@ -7,8 +7,12 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FastdfsClientConfig {
+	
+	private static final Logger logger = LoggerFactory.getLogger(FastdfsClientConfig.class);
 	
 	public static final int DEFAULT_CONNECT_TIMEOUT = 5; // second
 	public static final int DEFAULT_NETWORK_TIMEOUT = 30; // second
@@ -29,16 +33,19 @@ public class FastdfsClientConfig {
 	 * @param configFile 配置文件名
 	 * @throws ConfigurationException
 	 */
-	public FastdfsClientConfig(String configFile) throws ConfigurationException {
-		Configuration config = new PropertiesConfiguration(configFile);
-		
-		this.connectTimeout = config.getInt("connect_timeout", DEFAULT_CONNECT_TIMEOUT) * 1000;
-		this.networkTimeout = config.getInt("network_timeout", DEFAULT_NETWORK_TIMEOUT) * 1000;
-		
-		List<Object> trackerServers = config.getList("tracker_server");
-		
-		for (Object trackerServer : trackerServers) {
-			trackerAddrs.add((String) trackerServer);
+	public FastdfsClientConfig(String configFile) {
+		try {
+			Configuration config = new PropertiesConfiguration(configFile);
+			List<Object> trackerServers = config.getList("tracker_server");
+			
+			for (Object trackerServer : trackerServers) {
+				trackerAddrs.add((String) trackerServer);
+			}
+			
+			connectTimeout = config.getInt("connect_timeout", DEFAULT_CONNECT_TIMEOUT) * 1000;
+			networkTimeout = config.getInt("network_timeout", DEFAULT_NETWORK_TIMEOUT) * 1000;
+		} catch (ConfigurationException e) {
+			logger.error("init fastdfs client config error", e);
 		}
 	}
 	

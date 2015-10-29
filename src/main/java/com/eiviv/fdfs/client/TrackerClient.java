@@ -13,7 +13,6 @@ import com.eiviv.fdfs.cmd.QueryStorageInfoCmd;
 import com.eiviv.fdfs.cmd.QueryUpdateCmd;
 import com.eiviv.fdfs.cmd.QueryUploadCmd;
 import com.eiviv.fdfs.config.FastdfsClientConfig;
-import com.eiviv.fdfs.exception.FastdfsClientException;
 import com.eiviv.fdfs.model.GroupInfo;
 import com.eiviv.fdfs.model.Result;
 import com.eiviv.fdfs.model.StorageInfo;
@@ -57,7 +56,7 @@ public class TrackerClient extends AbstractClient {
 	 * 获取上传 storage
 	 * 
 	 * @return
-	 * @throws FastdfsClientException
+	 * @throws IOException
 	 */
 	public Result<UploadStorage> getUploadStorage() throws IOException {
 		Cmd<UploadStorage> command = new QueryUploadCmd();
@@ -72,7 +71,7 @@ public class TrackerClient extends AbstractClient {
 	 * @param fileName 文件名
 	 * @return 更新 storage 地址
 	 * @throws IOException
-	 * @throws FastdfsClientException
+	 * @throws IOException
 	 */
 	public Result<String> getUpdateStorageAddr(String group, String fileName) throws IOException {
 		Cmd<String> cmd = new QueryUpdateCmd(group, fileName);
@@ -86,7 +85,7 @@ public class TrackerClient extends AbstractClient {
 	 * @param group 组名
 	 * @param fileName 文件名
 	 * @return 下载 storage 地址
-	 * @throws FastdfsClientException
+	 * @throws IOException
 	 */
 	public Result<String> getDownloadStorageAddr(String group, String fileName) throws IOException {
 		Cmd<String> cmd = new QueryDownloadCmd(group, fileName);
@@ -98,7 +97,7 @@ public class TrackerClient extends AbstractClient {
 	 * 获取组信息
 	 * 
 	 * @return 组信息
-	 * @throws FastdfsClientException
+	 * @throws IOException
 	 */
 	public Result<ArrayList<GroupInfo>> getGroupInfos() throws IOException {
 		Cmd<ArrayList<GroupInfo>> cmd = new QueryGroupInfoCmd();
@@ -112,7 +111,7 @@ public class TrackerClient extends AbstractClient {
 	 * @param group 组名
 	 * @return StorageInfo 集合
 	 * @throws IOException
-	 * @throws FastdfsClientException
+	 * @throws IOException
 	 */
 	public Result<ArrayList<StorageInfo>> getStorageInfos(String group) throws IOException {
 		Cmd<ArrayList<StorageInfo>> cmd = new QueryStorageInfoCmd(group);
@@ -123,7 +122,7 @@ public class TrackerClient extends AbstractClient {
 	/**
 	 * 关闭socket
 	 * 
-	 * @throws FastdfsClientException
+	 * @throws IOException
 	 */
 	public void close() throws IOException {
 		Socket socket = getSocket();
@@ -137,7 +136,7 @@ public class TrackerClient extends AbstractClient {
 	 * 获取socket
 	 * 
 	 * @return
-	 * @throws FastdfsClientException
+	 * @throws IOException
 	 */
 	private Socket getSocket() throws IOException {
 		

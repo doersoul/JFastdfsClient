@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 
-import com.eiviv.fdfs.exception.FastdfsClientException;
 import com.eiviv.fdfs.model.FileInfo;
 import com.eiviv.fdfs.model.GroupInfo;
 import com.eiviv.fdfs.model.Result;
@@ -658,7 +657,6 @@ public class FastdfsClient extends AbstractClient {
 		try {
 			socket.setSoTimeout(10000);
 			socket.connect(new InetSocketAddress(host, port), 10000);
-			return true;
 		} catch (SocketException e) {
 			return false;
 		} catch (IOException e) {
@@ -671,6 +669,8 @@ public class FastdfsClient extends AbstractClient {
 				socket = null;
 			}
 		}
+		
+		return true;
 	}
 	
 	/**
@@ -679,7 +679,7 @@ public class FastdfsClient extends AbstractClient {
 	 * @return
 	 * @throws Exception
 	 */
-	private String getTrackerAddr() throws FastdfsClientException {
+	private String getTrackerAddr() throws Exception {
 		int currIdx;
 		
 		synchronized (FastdfsClient.class) {
@@ -714,7 +714,7 @@ public class FastdfsClient extends AbstractClient {
 			}
 		}
 		
-		throw new FastdfsClientException("cannot access all tracker server " + trackerAddrs);
+		throw new SocketException("network is unreachable, cannot access all tracker server " + trackerAddrs);
 	}
 	
 	/**

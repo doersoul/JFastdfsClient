@@ -2,17 +2,13 @@ package com.eiviv.fdfs.client;
 
 import java.util.List;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.eiviv.fdfs.config.FastdfsClientConfig;
 
 public class FastdfsClientFactory {
 	
-	private static Logger logger = LoggerFactory.getLogger(FastdfsClientFactory.class);
 	private final static String configFile = "fastdfs.properties";
 	private static volatile FastdfsClient fastdfsClient;
 	private static FastdfsClientConfig config = null;
@@ -29,27 +25,22 @@ public class FastdfsClientFactory {
 		if (fastdfsClient == null) {
 			synchronized (FastdfsClient.class) {
 				if (fastdfsClient == null) {
-					try {
-						config = new FastdfsClientConfig(configFile);
-					} catch (ConfigurationException e) {
-						logger.warn("Load fastdfs config failed.", e);
-					}
+					config = new FastdfsClientConfig(configFile);
 					
 					int connectTimeout = config.getConnectTimeout();
 					int networkTimeout = config.getNetworkTimeout();
-					
-					TrackerClientFactory trackerClientFactory = new TrackerClientFactory(connectTimeout, networkTimeout);
-					StorageClientFactory storageClientFactory = new StorageClientFactory(connectTimeout, networkTimeout);
-					
-					GenericKeyedObjectPoolConfig trackerClientPoolConfig = config.getTrackerClientPoolConfig();
-					GenericKeyedObjectPoolConfig storageClientPoolConfig = config.getStorageClientPoolConfig();
-					
-					GenericKeyedObjectPool<String, TrackerClient> trackerClientPool = new GenericKeyedObjectPool<String, TrackerClient>(trackerClientFactory,
-																																		trackerClientPoolConfig);
-					GenericKeyedObjectPool<String, StorageClient> storageClientPool = new GenericKeyedObjectPool<String, StorageClient>(storageClientFactory,
-																																		storageClientPoolConfig);
 					List<String> trackerAddrs = config.getTrackerAddrs();
-					fastdfsClient = new FastdfsClient(trackerAddrs, trackerClientPool, storageClientPool);
+					
+					TrackerClientFactory tcf = new TrackerClientFactory(connectTimeout, networkTimeout);
+					StorageClientFactory scf = new StorageClientFactory(connectTimeout, networkTimeout);
+					
+					GenericKeyedObjectPoolConfig tcpc = config.getTrackerClientPoolConfig();
+					GenericKeyedObjectPoolConfig scpc = config.getStorageClientPoolConfig();
+					
+					GenericKeyedObjectPool<String, TrackerClient> tcp = new GenericKeyedObjectPool<String, TrackerClient>(tcf, tcpc);
+					GenericKeyedObjectPool<String, StorageClient> scp = new GenericKeyedObjectPool<String, StorageClient>(scf, scpc);
+					
+					fastdfsClient = new FastdfsClient(trackerAddrs, tcp, scp);
 				}
 			}
 		}
