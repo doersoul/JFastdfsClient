@@ -53,15 +53,26 @@ public class TrackerClient extends AbstractClient {
 	}
 	
 	/**
-	 * 获取上传 storage
+	 * 获取上传 storage, 指定组
+	 * 
+	 * @param group
+	 * @return
+	 * @throws IOException
+	 */
+	public Result<UploadStorage> getUploadStorage(String group) throws IOException {
+		Cmd<UploadStorage> command = new QueryUploadCmd(group);
+		
+		return command.exec(getSocket());
+	}
+	
+	/**
+	 * 获取上传 storage, 随机获取
 	 * 
 	 * @return
 	 * @throws IOException
 	 */
 	public Result<UploadStorage> getUploadStorage() throws IOException {
-		Cmd<UploadStorage> command = new QueryUploadCmd();
-		
-		return command.exec(getSocket());
+		return getUploadStorage(null);
 	}
 	
 	/**

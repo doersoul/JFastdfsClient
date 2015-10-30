@@ -77,16 +77,17 @@ public class FastdfsClient extends AbstractClient {
 	}
 	
 	/**
-	 * 文件上传
+	 * 指定组上传文件
 	 * 
+	 * @param group 指定组
 	 * @param inputStream 文件流
 	 * @param size 文件大小
 	 * @param extName 文件扩展名
 	 * @param meta 元信息
-	 * @return result
+	 * @return
 	 * @throws Exception
 	 */
-	public Result<String> upload(InputStream inputStream, long size, String extName, HashMap<String, String> meta) throws Exception {
+	public Result<String> upload(String group, InputStream inputStream, long size, String extName, HashMap<String, String> meta) throws Exception {
 		String trackerAddr = getTrackerAddr();
 		TrackerClient trackerClient = null;
 		StorageClient storageClient = null;
@@ -95,7 +96,7 @@ public class FastdfsClient extends AbstractClient {
 		
 		try {
 			trackerClient = trackerClientPool.borrowObject(trackerAddr);
-			Result<UploadStorage> result = trackerClient.getUploadStorage();
+			Result<UploadStorage> result = trackerClient.getUploadStorage(group);
 			
 			if (!result.isSuccess()) {
 				return new Result<String>(result.getCode());
@@ -133,6 +134,34 @@ public class FastdfsClient extends AbstractClient {
 	}
 	
 	/**
+	 * 上传文件
+	 * 
+	 * @param inputStream 文件流
+	 * @param size 文件大小
+	 * @param extName 文件扩展名
+	 * @param meta 元信息
+	 * @return
+	 * @throws Exception
+	 */
+	public Result<String> upload(InputStream inputStream, long size, String extName, HashMap<String, String> meta) throws Exception {
+		return upload(null, inputStream, size, extName, meta);
+	}
+	
+	/**
+	 * 指定组上传文件
+	 * 
+	 * @param group 组名
+	 * @param file 文件
+	 * @param extName 文件扩展名
+	 * @param meta 元信息
+	 * @return result
+	 * @throws Exception
+	 */
+	public Result<String> upload(String group, File file, String extName, HashMap<String, String> meta) throws Exception {
+		return upload(group, new FileInputStream(file), file.length(), extName, meta);
+	}
+	
+	/**
 	 * 文件上传
 	 * 
 	 * @param file 文件
@@ -146,6 +175,18 @@ public class FastdfsClient extends AbstractClient {
 	}
 	
 	/**
+	 * 指定组上传文件
+	 * 
+	 * @param group 组名
+	 * @param extName 扩展名
+	 * @return result
+	 * @throws Exception
+	 */
+	public Result<String> upload(String group, File file, String extName) throws Exception {
+		return upload(group, file, extName, null);
+	}
+	
+	/**
 	 * 上传文件
 	 * 
 	 * @param file 文件
@@ -155,6 +196,17 @@ public class FastdfsClient extends AbstractClient {
 	 */
 	public Result<String> upload(File file, String extName) throws Exception {
 		return upload(file, extName, null);
+	}
+	
+	/**
+	 * 指定组上传文件
+	 * 
+	 * @param file 文件
+	 * @return result
+	 * @throws Exception
+	 */
+	public Result<String> upload(String group, File file) throws Exception {
+		return upload(group, file, getFileExtName(file));
 	}
 	
 	/**
@@ -331,10 +383,10 @@ public class FastdfsClient extends AbstractClient {
 	}
 	
 	/**
-	 * 截断文件内容
+	 * truncate文件
 	 * 
-	 * @param fileId
-	 * @param truncatedFileSize
+	 * @param fileId "group/remoteFileName"
+	 * @param truncatedFileSize 大小
 	 * @return result
 	 * @throws Exception
 	 */

@@ -27,7 +27,7 @@ public class UploadTest {
 			
 			while (true) {
 				
-				if (i >= 2) {
+				if (i >= 100) {
 					break;
 				}
 				

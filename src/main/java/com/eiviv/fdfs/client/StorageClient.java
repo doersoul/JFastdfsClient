@@ -215,10 +215,10 @@ public class StorageClient extends AbstractClient {
 	}
 	
 	/**
-	 * 裁剪文件
+	 * truncate文件
 	 * 
 	 * @param fileName remoteFileName
-	 * @param truncatedFileSize 裁剪后的大小
+	 * @param truncatedFileSize 大小
 	 * @return boolean
 	 * @throws IOException
 	 */

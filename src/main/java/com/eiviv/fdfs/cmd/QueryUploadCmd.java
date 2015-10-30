@@ -36,6 +36,8 @@ public class QueryUploadCmd extends AbstractCmd<UploadStorage> {
 			return new RequestContext(requestCmdCode);
 		}
 		
+		requestCmdCode = Context.TRACKER_PROTO_CMD_SERVICE_QUERY_STORE_WITH_GROUP_ONE;
+		
 		byte[] bs = group.getBytes(Context.CHARSET);
 		byte[] params = new byte[Context.FDFS_GROUP_NAME_MAX_LEN];
 		

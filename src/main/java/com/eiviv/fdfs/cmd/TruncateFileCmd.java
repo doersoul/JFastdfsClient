@@ -17,7 +17,7 @@ public class TruncateFileCmd extends AbstractCmd<Boolean> {
 	 * 实例化
 	 * 
 	 * @param fileName remoteFileName
-	 * @param truncatedFileSize 裁剪后的大小
+	 * @param truncatedFileSize 大小
 	 */
 	public TruncateFileCmd(String fileName, long truncatedFileSize) {
 		this.fileName = fileName;
