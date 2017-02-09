@@ -306,14 +306,13 @@ public abstract class AbstractCmd<T extends Serializable> implements Cmd<T> {
 	 * @return
 	 */
 	protected abstract long getLongOfFixedResponseEntity();
-	
+
 	/**
 	 * 处理完成回调方法
-	 * 
-	 * @param response
+	 *
+	 * @param responseContext
 	 * @return
-	 * @throws IOException
-	 */
+     */
 	protected abstract Result<T> callback(ResponseContext responseContext);
 	
 }

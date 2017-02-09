@@ -13,6 +13,7 @@ public class UploadCmd extends AbstractCmd<String> {
 	
 	private byte storePathIndex;
 	private InputStream inputStream;
+	private byte[] fileByte;
 	private long size;
 	private String extName;
 	
@@ -26,6 +27,13 @@ public class UploadCmd extends AbstractCmd<String> {
 	public UploadCmd(InputStream inputStream, long size, String extName, byte storePathIndex) {
 		this.inputStream = inputStream;
 		this.size = size;
+		this.extName = extName;
+		this.storePathIndex = storePathIndex;
+	}
+
+	public UploadCmd(byte[] fileByte, String extName, byte storePathIndex) {
+		this.fileByte = fileByte;
+		this.size = fileByte.length;
 		this.extName = extName;
 		this.storePathIndex = storePathIndex;
 	}
@@ -48,7 +56,11 @@ public class UploadCmd extends AbstractCmd<String> {
 		
 		System.arraycopy(fileSizeByte, 0, params, 1, fileSizeByte.length);
 		System.arraycopy(fileExtNameByte, 0, params, fileSizeByte.length + 1, fileExtNameByteLen);
-		
+
+		if (fileByte != null) {
+			return new RequestContext(Context.STORAGE_PROTO_CMD_UPLOAD_FILE, params, fileByte);
+		}
+
 		return new RequestContext(Context.STORAGE_PROTO_CMD_UPLOAD_FILE, params, inputStream, size);
 	}
 	

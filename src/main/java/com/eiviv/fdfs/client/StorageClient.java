@@ -75,7 +75,22 @@ public class StorageClient extends AbstractClient {
 		
 		return cmd.exec(getSocket());
 	}
-	
+
+	/**
+	 * 上传文件
+	 *
+	 * @param fileByte
+	 * @param extName
+	 * @param storePathIndex
+	 * @return
+	 * @throws IOException
+     */
+	public Result<String> upload(byte[] fileByte, String extName, byte storePathIndex) throws IOException {
+		Cmd<String> cmd = new UploadCmd(fileByte, extName, storePathIndex);
+
+		return cmd.exec(getSocket());
+	}
+
 	/**
 	 * 上传文件
 	 * 

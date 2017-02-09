@@ -75,7 +75,101 @@ public class FastdfsClient extends AbstractClient {
 		this.trackerClientPool = trackerClientPool;
 		this.storageClientPool = storageClientPool;
 	}
-	
+
+	/**
+	 * 指定组上传文件
+	 *
+	 * @param group 指定组
+	 * @param fileByte 文件
+	 * @param extName 文件扩展名
+	 * @param meta 元信息
+	 * @return
+	 * @throws Exception
+	 */
+	public Result<String> upload(String group, byte[] fileByte, String extName, HashMap<String, String> meta) throws Exception {
+		String trackerAddr = getTrackerAddr();
+		TrackerClient trackerClient = null;
+		StorageClient storageClient = null;
+		String storageAddr = null;
+		boolean success = true;
+
+		try {
+			trackerClient = trackerClientPool.borrowObject(trackerAddr);
+			Result<UploadStorage> result = trackerClient.getUploadStorage(group);
+
+			if (!result.isSuccess()) {
+				return new Result<String>(result.getCode());
+			}
+
+			storageAddr = result.getData().getAddress();
+			storageClient = storageClientPool.borrowObject(storageAddr);
+
+			Result<String> uploadResult = storageClient.upload(fileByte, extName, result.getData().getPathIndex());
+
+			if (uploadResult.isSuccess() && meta != null) {
+				setMeta(uploadResult.getData(), meta);
+			}
+
+			return uploadResult;
+		} catch (Exception e) {
+			success = false;
+			throw e;
+		} finally {
+			if (storageClient != null) {
+				if (success) {
+					storageClientPool.returnObject(storageAddr, storageClient);
+				} else {
+					storageClientPool.invalidateObject(storageAddr, storageClient);
+				}
+			}
+			if (trackerClient != null) {
+				if (success) {
+					trackerClientPool.returnObject(trackerAddr, trackerClient);
+				} else {
+					trackerClientPool.invalidateObject(trackerAddr, trackerClient);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 上传文件
+	 *
+	 * @param fileByte 文件
+	 * @param extName 文件扩展名
+	 * @param meta 元信息
+	 * @return
+	 * @throws Exception
+	 */
+	public Result<String> upload(byte[] fileByte, String extName, HashMap<String, String> meta) throws Exception {
+		return upload(null, fileByte, extName, meta);
+	}
+
+	/**
+	 * 指定组上传文件
+	 *
+	 * @param group 指定组
+	 * @param fileByte 文件
+	 * @param extName 文件扩展名
+	 * @return
+	 * @throws Exception
+	 */
+	public Result<String> upload(String group, byte[] fileByte, String extName) throws Exception {
+		return upload(group, fileByte, extName, null);
+	}
+
+	/**
+	 * 上传文件
+	 *
+	 * @param fileByte 文件
+	 * @param extName 文件扩展名
+	 * @return
+	 * @throws Exception
+	 */
+	public Result<String> upload(byte[] fileByte, String extName) throws Exception {
+		return upload(null, fileByte, extName);
+	}
+
 	/**
 	 * 指定组上传文件
 	 * 
@@ -489,14 +583,13 @@ public class FastdfsClient extends AbstractClient {
 			}
 		}
 	}
-	
+
 	/**
 	 * 获取所有的groupInfo
-	 * 
-	 * @param trackerAddr
-	 * @return result
+	 *
+	 * @return
 	 * @throws Exception
-	 */
+     */
 	public ArrayList<GroupInfo> getGroupInfos() throws Exception {
 		String trackerAddr = getTrackerAddr();
 		TrackerClient trackerClient = null;
