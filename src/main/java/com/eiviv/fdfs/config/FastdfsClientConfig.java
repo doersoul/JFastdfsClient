@@ -17,14 +17,20 @@ public class FastdfsClientConfig {
 	public static final int DEFAULT_CONNECT_TIMEOUT = 5; // second
 	public static final int DEFAULT_NETWORK_TIMEOUT = 30; // second
 	
-	private int connectTimeout = DEFAULT_CONNECT_TIMEOUT * 1000;
-	private int networkTimeout = DEFAULT_NETWORK_TIMEOUT * 1000;
-	private List<String> trackerAddrs = new ArrayList<String>();
+	private int connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+	private int networkTimeout = DEFAULT_NETWORK_TIMEOUT;
+
+	private GenericKeyedObjectPoolConfig trackerPoolConfig;
+	private GenericKeyedObjectPoolConfig StoragePoolConfig;
+	private List<String> trackerAddrs;
 	
 	/**
 	 * 实例化
 	 */
 	public FastdfsClientConfig() {
+		trackerPoolConfig = new GenericKeyedObjectPoolConfig();
+		StoragePoolConfig = new GenericKeyedObjectPoolConfig();
+		trackerAddrs = new ArrayList<String>();
 	}
 	
 	/**
@@ -42,47 +48,50 @@ public class FastdfsClientConfig {
 				trackerAddrs.add((String) trackerServer);
 			}
 			
-			connectTimeout = config.getInt("connect_timeout", DEFAULT_CONNECT_TIMEOUT) * 1000;
-			networkTimeout = config.getInt("network_timeout", DEFAULT_NETWORK_TIMEOUT) * 1000;
+			connectTimeout = config.getInt("connect_timeout", DEFAULT_CONNECT_TIMEOUT);
+			networkTimeout = config.getInt("network_timeout", DEFAULT_NETWORK_TIMEOUT);
 		} catch (ConfigurationException e) {
 			logger.error("init fastdfs client config error", e);
 		}
 	}
-	
-	public GenericKeyedObjectPoolConfig getTrackerClientPoolConfig() {
-		GenericKeyedObjectPoolConfig poolConfig = new GenericKeyedObjectPoolConfig();
-		
-		return poolConfig;
-	}
-	
-	public GenericKeyedObjectPoolConfig getStorageClientPoolConfig() {
-		GenericKeyedObjectPoolConfig poolConfig = new GenericKeyedObjectPoolConfig();
-		
-		return poolConfig;
-	}
-	
+
 	public int getConnectTimeout() {
-		return connectTimeout;
+		return connectTimeout * 1000;
 	}
-	
+
 	public void setConnectTimeout(int connectTimeout) {
 		this.connectTimeout = connectTimeout;
 	}
-	
+
 	public int getNetworkTimeout() {
-		return networkTimeout;
+		return networkTimeout * 1000;
 	}
-	
+
 	public void setNetworkTimeout(int networkTimeout) {
 		this.networkTimeout = networkTimeout;
 	}
-	
+
+	public GenericKeyedObjectPoolConfig getTrackerPoolConfig() {
+		return trackerPoolConfig;
+	}
+
+	public void setTrackerPoolConfig(GenericKeyedObjectPoolConfig trackerPoolConfig) {
+		this.trackerPoolConfig = trackerPoolConfig;
+	}
+
+	public GenericKeyedObjectPoolConfig getStoragePoolConfig() {
+		return StoragePoolConfig;
+	}
+
+	public void setStoragePoolConfig(GenericKeyedObjectPoolConfig storagePoolConfig) {
+		StoragePoolConfig = storagePoolConfig;
+	}
+
 	public List<String> getTrackerAddrs() {
 		return trackerAddrs;
 	}
-	
+
 	public void setTrackerAddrs(List<String> trackerAddrs) {
 		this.trackerAddrs = trackerAddrs;
 	}
-	
 }
