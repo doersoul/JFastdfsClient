@@ -32,8 +32,8 @@ public class FastdfsClientFactory {
 					TrackerClientFactory tcf = new TrackerClientFactory(connectTimeout, networkTimeout);
 					StorageClientFactory scf = new StorageClientFactory(connectTimeout, networkTimeout);
 
-					GenericKeyedObjectPoolConfig tcpc = config.getTrackerClientPoolConfig();
-					GenericKeyedObjectPoolConfig scpc = config.getStorageClientPoolConfig();
+					GenericKeyedObjectPoolConfig tcpc = config.getTrackerPoolConfig();
+					GenericKeyedObjectPoolConfig scpc = config.getStoragePoolConfig();
 
 					GenericKeyedObjectPool<String, TrackerClient> tcp = new GenericKeyedObjectPool<String, TrackerClient>(tcf, tcpc);
 					GenericKeyedObjectPool<String, StorageClient> scp = new GenericKeyedObjectPool<String, StorageClient>(scf, scpc);
